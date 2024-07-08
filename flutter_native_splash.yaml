@@ -2,6 +2,7 @@ flutter_native_splash:
 
   color: "#ffffff"
   image: assets/images/splash_android12_logo.png
+  
 
 
   android_12:
