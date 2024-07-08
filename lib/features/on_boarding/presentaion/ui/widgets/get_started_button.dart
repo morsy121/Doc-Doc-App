@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 class GetStartedButton extends StatelessWidget {
   const GetStartedButton({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
