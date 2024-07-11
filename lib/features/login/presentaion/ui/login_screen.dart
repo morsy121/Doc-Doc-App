@@ -1,12 +1,16 @@
 import 'package:appointement_booking_app/core/helpers/spacing.dart';
 import 'package:appointement_booking_app/core/theming/styles.dart';
 import 'package:appointement_booking_app/core/widgets/app_text_button.dart';
-import 'package:appointement_booking_app/core/widgets/app_text_form_field.dart';
+import 'package:appointement_booking_app/features/login/data/models/login_request_body.dart';
+import 'package:appointement_booking_app/features/login/presentaion/ui/widgets/email_and_password.dart';
 import 'package:appointement_booking_app/features/login/presentaion/ui/widgets/terms_and_condition_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../logic/login_cubit/login_cubit.dart';
 import 'widgets/dont_have_any_account.dart';
+import 'widgets/login_bloc_lisner.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,8 +20,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final formkey = GlobalKey<FormState>();
-  bool isObscureText = true;
+  final bool isObscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 30.h),
         child: SingleChildScrollView(
           child: Form(
-            key: formkey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -42,27 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 verticalSpace(36),
                 Column(
                   children: [
-                    AppTextFormField(
-                      hintText: 'Email',
-                      validator: (value) {},
-                    ),
-                    verticalSpace(10),
-                    AppTextFormField(
-                      isObscureText: isObscureText,
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isObscureText = !isObscureText;
-                          });
-                        },
-                        child: Icon(isObscureText
-                            ? Icons.visibility
-                            : Icons.visibility_outlined),
-                      ),
-                      hintText: 'Password',
-                      validator: (value) {},
-                    ),
-                    verticalSpace(20),
+                    const EmailAndPassword(),
+                    verticalSpace(24),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -73,13 +57,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     verticalSpace(20),
                     AppTextButton(
                       buttonText: 'Login',
-                      onPressed: () {},
+                      onPressed: () {
+                        if (context
+                            .read<LogincubitCubit>()
+                            .formkey
+                            .currentState!
+                            .validate()) {
+                          context.read<LogincubitCubit>().emitLoginStates(
+                                LoginRequestBody(
+                                    email: context
+                                        .read<LogincubitCubit>()
+                                        .emailController
+                                        .text,
+                                    password: context
+                                        .read<LogincubitCubit>()
+                                        .passwordController
+                                        .text),
+                              );
+                        }
+                      },
                       textStyle: TextStyles.font16WhiteMedium,
                     ),
                     verticalSpace(16),
                     const TermsAndConditionsText(),
                     verticalSpace(16),
-                    const DontHaveAccountText()
+                    const DontHaveAccountText(),
+                    const LoginBlocListnner(),
                   ],
                 )
               ],
@@ -90,3 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+// void validateThemLogin(BuildContext context) {
+//   if (context.read<LogincubitCubit>().formkey.currentState!.validate()) {
+//     context.read<LogincubitCubit>().emitLoginStates(
+//           LoginRequestBody(
+//               email: context.read<LogincubitCubit>().emailController.text,
+//               password:
+//                   context.read<LogincubitCubit>().passwordController.text),
+//         );
+//   }
+// }
